@@ -1,17 +1,16 @@
 'use client';
 
 import { motion, useScroll } from 'motion/react';
-import { useRef, Suspense, useState } from 'react';
+import { useRef, Suspense } from 'react';
 import { Rocket, BatteryCharging, Globe, ChevronDown, Hammer, Stethoscope, Home, Scissors } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Stars, Float, useTexture, Html } from '@react-three/drei';
+import { Stars, Float, useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 
 function Moon() {
   const { scrollYProgress } = useScroll();
   const moonRef = useRef<THREE.Mesh>(null);
   const groupRef = useRef<THREE.Group>(null);
-  const [hovered, setHovered] = useState(false);
 
   // Use a reliable public domain moon texture
   const [colorMap] = useTexture(['https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/moon_1024.jpg']);
@@ -65,11 +64,7 @@ function Moon() {
   return (
     <group ref={groupRef}>
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.2}>
-        <mesh 
-          ref={moonRef}
-          onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
-          onPointerOut={(e) => { setHovered(false); document.body.style.cursor = 'auto'; }}
-        >
+        <mesh ref={moonRef}>
           {/* Increased geometry resolution for displacement map */}
           <sphereGeometry args={[1, 128, 128]} />
           <meshStandardMaterial
@@ -81,14 +76,6 @@ function Moon() {
             displacementScale={0.03}
             metalness={0.1}
           />
-          {hovered && (
-            <Html distanceFactor={8} zIndexRange={[100, 0]}>
-              <div className="bg-black/80 backdrop-blur-md text-white p-3 rounded-xl border border-white/20 text-xs w-48 pointer-events-none shadow-2xl shadow-black/50 transform -translate-x-1/2 -translate-y-full mt-[-20px]">
-                <strong className="text-amber-400 block mb-1 text-sm font-display">The Moon</strong>
-                <p className="text-slate-300 font-light leading-relaxed">Target for the Apollo missions and the reason cordless tools were revolutionized.</p>
-              </div>
-            </Html>
-          )}
         </mesh>
       </Float>
     </group>
@@ -99,7 +86,6 @@ function Drill() {
   const { scrollYProgress } = useScroll();
   const groupRef = useRef<THREE.Group>(null);
   const drillBitRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHovered] = useState(false);
 
   useFrame((state, delta) => {
     const offset = scrollYProgress.get();
@@ -166,11 +152,7 @@ function Drill() {
   });
 
   return (
-    <group 
-      ref={groupRef}
-      onPointerOver={(e) => { e.stopPropagation(); setHovered(true); document.body.style.cursor = 'pointer'; }}
-      onPointerOut={(e) => { setHovered(false); document.body.style.cursor = 'auto'; }}
-    >
+    <group ref={groupRef}>
       <Float speed={2} rotationIntensity={0.2} floatIntensity={0.5}>
         <group rotation={[0, -Math.PI / 4, 0]}>
           {/* Body pointing forward along Z */}
@@ -209,14 +191,6 @@ function Drill() {
             <meshStandardMaterial color="#111" roughness={0.8} />
           </mesh>
         </group>
-        {hovered && (
-          <Html distanceFactor={8} position={[0, 1, 0]} zIndexRange={[100, 0]}>
-            <div className="bg-black/80 backdrop-blur-md text-white p-3 rounded-xl border border-white/20 text-xs w-48 pointer-events-none shadow-2xl shadow-black/50 transform -translate-x-1/2 -translate-y-full mt-[-10px]">
-              <strong className="text-amber-400 block mb-1 text-sm font-display">Apollo Surface Drill</strong>
-              <p className="text-slate-300 font-light leading-relaxed">Zero-gravity optimized, battery-powered core sampler designed by Black & Decker.</p>
-            </div>
-          </Html>
-        )}
       </Float>
     </group>
   );
